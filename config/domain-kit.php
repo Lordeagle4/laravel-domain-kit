@@ -15,9 +15,9 @@ return [
     */
 
     'generate' => [
-        'events' => true,
-        'listeners' => true,
-        'jobs' => true,
+        'events' => false,
+        'listeners' => false,
+        'jobs' => false,
         'actions' => true,
         'controllers' => true,
         'models' => true,
