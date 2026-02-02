@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Illuminate\Contracts\Queue\ShouldQueue;
+use LaravelDomainKit\Queue\UsesDomainQueue;
+
+final class {{ class }} implements ShouldQueue
+{
+    use UsesDomainQueue;
+
+    public function handle(): void
+    {
+    }
+}

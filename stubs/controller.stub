@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+
+final class {{ class }}
+{
+    public function __invoke(Request $request): Response
+    {
+        return response()->noContent();
+    }
+}

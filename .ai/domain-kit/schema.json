@@ -1,0 +1,19 @@
+{
+    "framework": "Laravel Domain Kit",
+    "version": "1.0.0",
+    "domainsRoot": "app/Domains",
+    "components": [
+        "Actions",
+        "Controllers",
+        "Events",
+        "Listeners",
+        "Jobs",
+        "Models",
+        "Policies"
+    ],
+    "conventions": {
+        "strictTypes": true,
+        "finalClasses": true,
+        "domainFirst": true
+    }
+}

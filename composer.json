@@ -1,0 +1,22 @@
+{
+    "name": "awtech/laravel-domain-kit",
+    "description": "Opinionated domain-first generators for Laravel",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^11 || ^12"
+    },
+    "autoload": {
+        "psr-4": {
+            "Awtech\\LaravelDomainKit\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Awtech\\LaravelDomainKit\\DomainKitServiceProvider"
+            ]
+        }
+    }
+}
