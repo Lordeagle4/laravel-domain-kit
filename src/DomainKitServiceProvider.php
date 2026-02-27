@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Awtechs\LaravelDomainKit;
 
 use Illuminate\Support\ServiceProvider;
-use Awtech\LaravelDomainKit\Commands\{
+use Awtechs\LaravelDomainKit\Commands\{
     MakeDomainCommand,
     MakeDomainEventCommand,
     MakeDomainListenerCommand,
@@ -35,5 +35,9 @@ final class DomainKitServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../stubs' => base_path('stubs/domain-kit'),
         ], 'domain-kit-stubs');
+
+        $this->publishes([
+            __DIR__ . '/../config/domain-kit.php' => config_path('domain-kit.php'),
+        ], 'domain-kit-config');
     }
 }
