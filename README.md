@@ -38,7 +38,7 @@ This is tooling that encodes architectural decisions.
 ## Installation
 
 ```bash
-composer require --dev awtech/laravel-domain-kit
+composer require --dev awtechs/laravel-domain-kit
 ```
 
 Laravel auto‑discovers the service provider.
