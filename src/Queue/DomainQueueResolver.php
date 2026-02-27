@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Awtech\LaravelDomainKit\Queue;
+namespace Awtechs\LaravelDomainKit\Queue;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 

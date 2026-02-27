@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Awtech\LaravelDomainKit\Queue;
+namespace Awtechs\LaravelDomainKit\Queue;
 
 trait UsesDomainQueue
 {

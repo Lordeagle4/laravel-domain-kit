@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Awtech\LaravelDomainKit;
+namespace Awtechs\LaravelDomainKit;
 
 use Illuminate\Support\ServiceProvider;
 use Awtech\LaravelDomainKit\Commands\{

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Awtech\LaravelDomainKit\Commands;
+namespace Awtechs\LaravelDomainKit\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;

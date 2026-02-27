@@ -1,5 +1,5 @@
 {
-    "name": "awtech/laravel-domain-kit",
+    "name": "awtechs/laravel-domain-kit",
     "description": "Opinionated domain-first generators for Laravel",
     "type": "library",
     "license": "MIT",
@@ -9,13 +9,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Awtech\\LaravelDomainKit\\": "src/"
+            "Awtechs\\LaravelDomainKit\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Awtech\\LaravelDomainKit\\DomainKitServiceProvider"
+                "Awtechs\\LaravelDomainKit\\DomainKitServiceProvider"
             ]
         }
     }

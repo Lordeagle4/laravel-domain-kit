@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Awtech\LaravelDomainKit\Contracts\Queue;
+namespace Awtechs\LaravelDomainKit\Contracts\Queue;
 
 interface HeavyQueue
 {

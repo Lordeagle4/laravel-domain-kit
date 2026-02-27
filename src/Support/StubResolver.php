@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Awtech\LaravelDomainKit\Support;
+namespace Awtechs\LaravelDomainKit\Support;
 
 use Illuminate\Support\Facades\File;
 use RuntimeException;
