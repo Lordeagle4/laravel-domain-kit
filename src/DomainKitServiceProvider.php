@@ -6,6 +6,7 @@ namespace Awtechs\LaravelDomainKit;
 
 use Illuminate\Support\ServiceProvider;
 use Awtechs\LaravelDomainKit\Commands\{
+    MakeDomainActionCommand,
     MakeDomainCommand,
     MakeDomainEventCommand,
     MakeDomainListenerCommand,
@@ -26,6 +27,7 @@ final class DomainKitServiceProvider extends ServiceProvider
         }
 
         $this->commands([
+            MakeDomainActionCommand::class,
             MakeDomainCommand::class,
             MakeDomainEventCommand::class,
             MakeDomainListenerCommand::class,
