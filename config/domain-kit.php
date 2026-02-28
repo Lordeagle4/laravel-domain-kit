@@ -34,6 +34,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Controller Action Generation
+    |--------------------------------------------------------------------------
+    |
+    | When using make:domain:controller with --action, choose how action
+    | classes are organized:
+    | - flat:   App\Domains\Users\Actions\CreateUser
+    | - nested: App\Domains\Users\Actions\User\Create
+    |
+    */
+    'controller_actions' => [
+        'style' => 'flat',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | AI / MCP Metadata
     |--------------------------------------------------------------------------
     */
