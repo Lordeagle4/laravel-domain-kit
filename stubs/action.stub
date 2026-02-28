@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace {{ namespace }};
+{{ model_import }}
 
 final readonly class {{ class }}
 {

@@ -10,7 +10,7 @@ use Awtechs\LaravelDomainKit\Support\{DomainPathResolver, StubResolver};
 
 final class MakeDomainControllerCommand extends Command
 {
-    protected $signature = 'make:domain:controller {domain} {name} {--r|resource} {--api} {--a|action}';
+    protected $signature = 'make:domain:controller {domain} {name} {--r|resource} {--api} {--a|action} {--aa} {--ra}';
     protected $description = 'Create a domain controller';
 
     public function handle(
@@ -19,6 +19,9 @@ final class MakeDomainControllerCommand extends Command
     ): int {
         $domain = ucfirst($this->argument('domain'));
         $name = ucfirst($this->argument('name'));
+        $api = (bool) ($this->option('api') || $this->option('aa'));
+        $withActions = (bool) ($this->option('action') || $this->option('ra') || $this->option('aa'));
+        $resource = (bool) ($this->option('resource') || $this->option('ra') || $this->option('aa') || $api);
 
         $path = $paths->resolve($domain, 'Controllers');
         File::ensureDirectoryExists($path);
@@ -30,26 +33,22 @@ final class MakeDomainControllerCommand extends Command
             return self::FAILURE;
         }
 
-        if ($this->option('action') && !$this->option('resource')) {
+        if ($withActions && !$resource) {
             $this->error('The --action option requires --resource.');
             return self::FAILURE;
         }
 
-        $contents = $this->option('resource')
+        $contents = $resource
             ? str_replace(
-                ['{{ namespace }}', '{{ class }}', '{{ response_import }}', '{{ return_type }}', '{{ index_body }}', '{{ show_body }}', '{{ create_body }}', '{{ update_body }}', '{{ destroy_body }}'],
+                ['{{ namespace }}', '{{ class }}', '{{ store_body }}', '{{ update_body }}', '{{ destroy_body }}'],
                 [
                     $paths->namespace($domain, 'Controllers'),
                     $name,
-                    $this->option('api') ? 'use Illuminate\Http\JsonResponse;' : 'use Illuminate\Http\Response;',
-                    $this->option('api') ? 'JsonResponse' : 'Response',
-                    $this->option('api') ? 'return response()->json([]);' : 'return response()->noContent();',
-                    $this->option('api') ? "return response()->json(['id' => \$id]);" : 'return response()->noContent();',
-                    $this->option('api') ? 'return response()->json([], 201);' : 'return response()->noContent();',
-                    $this->option('api') ? 'return response()->json([]);' : 'return response()->noContent();',
-                    $this->option('api') ? 'return response()->json(null, 204);' : 'return response()->noContent();',
+                    $api ? 'return response()->json([], 201);' : 'return response()->noContent();',
+                    $api ? 'return response()->json([]);' : 'return response()->noContent();',
+                    $api ? 'return response()->json(null, 204);' : 'return response()->noContent();',
                 ],
-                $stubs->resolve('controller-resource')
+                $stubs->resolve($api ? 'controller-resource-api' : 'controller-resource')
             )
             : str_replace(
                 ['{{ namespace }}', '{{ class }}'],
@@ -59,7 +58,7 @@ final class MakeDomainControllerCommand extends Command
 
         File::put($file, $contents);
 
-        if ($this->option('resource') && $this->option('action')) {
+        if ($resource && $withActions) {
             $controllerBase = $this->controllerBase($name);
             foreach (['Create', 'Update', 'Destroy'] as $verb) {
                 $result = $this->call('make:domain:action', [
