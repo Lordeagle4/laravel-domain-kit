@@ -5,31 +5,41 @@ declare(strict_types=1);
 namespace {{ namespace }};
 
 use Illuminate\Http\Request;
-{{ response_import }}
+use Illuminate\Http\Response;
 
 final class {{ class }}
 {
-    public function index(): {{ return_type }}
+    public function index(): Response
     {
-        {{ index_body }}
+        return response()->noContent();
     }
 
-    public function show(int|string $id): {{ return_type }}
+    public function create(): Response
     {
-        {{ show_body }}
+        return response()->noContent();
     }
 
-    public function create(Request $request): {{ return_type }}
+    public function store(Request $request): Response
     {
-        {{ create_body }}
+        {{ store_body }}
     }
 
-    public function update(Request $request, int|string $id): {{ return_type }}
+    public function show(int|string $id): Response
+    {
+        return response()->noContent();
+    }
+
+    public function edit(int|string $id): Response
+    {
+        return response()->noContent();
+    }
+
+    public function update(Request $request, int|string $id): Response
     {
         {{ update_body }}
     }
 
-    public function destroy(int|string $id): {{ return_type }}
+    public function destroy(int|string $id): Response
     {
         {{ destroy_body }}
     }

@@ -40,5 +40,16 @@ it('auto-wires action import and typehint into existing controller', function ()
 
     $controller = file_get_contents(app_path('Domains/Users/Controllers/UserController.php'));
     expect($controller)->toContain('use App\Domains\Users\Actions\CreateUser;');
-    expect($controller)->toContain('public function create(CreateUser $createUserAction, Request $request): Response');
+    expect($controller)->toContain('public function store(CreateUser $createUserAction, Request $request): Response');
+});
+
+it('imports existing model into generated action', function () {
+    $this->artisan('make:domain:model Users User')
+        ->assertExitCode(0);
+
+    $this->artisan('make:domain:action Users UpdateUser')
+        ->assertExitCode(0);
+
+    $action = file_get_contents(app_path('Domains/Users/Actions/UpdateUser.php'));
+    expect($action)->toContain('use App\Domains\Users\Models\User;');
 });

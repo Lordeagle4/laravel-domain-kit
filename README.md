@@ -1,375 +1,171 @@
 # Laravel Domain Kit
 
-> **Opinionated, domain-first tooling for Laravel.**
->
-> Laravel Domain Kit turns architecture into tooling. Instead of *documenting* best practices, it **enforces them at generation time**.
+Opinionated, domain-first tooling for Laravel generators.
 
----
-
-## What This Is
-
-Laravel Domain Kit is a **framework-style package** that introduces **Domain‑Driven structure**, **event discipline**, and **queue conventions** into Laravel projects through first‑class Artisan commands.
-
-It is inspired by:
-
-* Laravel’s own generators
-* Symfony MakerBundle
-* Real‑world, long‑lived Laravel systems
-
-This is **not** a snippet collection.
-This is **not** a helper repo.
-
-This is tooling that encodes architectural decisions.
-
----
-
-## Core Philosophy
-
-1. **Architecture must be enforceable**
-2. **Domains are first‑class citizens**
-3. **One responsibility per class**
-4. **Events describe facts, not actions**
-5. **Queues are intent‑driven, not string‑driven**
-6. **DX matters as much as runtime correctness**
-7. **AI tooling must understand your system**
-
----
-
-## Installation
+## Install
 
 ```bash
-composer require --dev awtechs/laravel-domain-kit
+composer require --dev awtechs/laravel-domain-kit:^1.0
 ```
 
-Laravel auto‑discovers the service provider.
+Laravel auto-discovers the service provider.
 
-Optional (recommended):
+Publish package config:
 
 ```bash
 php artisan vendor:publish --tag=domain-kit-config
 ```
 
----
+Publish stubs:
 
-## Directory Structure Enforced
-
-```txt
-app/
- └── Domains/
-     └── Orders/
-         ├── Actions/
-         ├── Events/
-         ├── Listeners/
-         ├── Jobs/
-         ├── Policies/
-         ├── Models/
+```bash
+php artisan vendor:publish --tag=domain-kit-stubs
 ```
 
-Each domain is a **bounded context**.
+## What it generates
 
----
+Domain Kit writes under `app/Domains/{Domain}/...`.
 
-## Commands Overview
+Default `make:domain` folders are controlled by `config/domain-kit.php`.
 
-### Domain Root
+## Commands
+
+### Domain root
 
 ```bash
 php artisan make:domain Orders
 ```
 
-Creates the domain skeleton.
-
----
-
-### Events
+### Controller
 
 ```bash
-php artisan make:domain:event Orders OrderPlaced
+php artisan make:domain:controller Orders OrderController
 ```
 
-Result:
-
-```php
-namespace App\Domains\Orders\Events;
-
-final class OrderPlaced {}
-```
-
----
-
-### Listeners
+Resource controller:
 
 ```bash
-php artisan make:domain:listener Orders SendOrderConfirmation --event=OrderPlaced
+php artisan make:domain:controller Orders OrderController --resource
+# or
+php artisan make:domain:controller Orders OrderController -r
 ```
 
-Features:
+Resource methods generated:
 
-* Native Laravel listener stub
-* Domain‑scoped namespace
-* Optional auto‑registration
+- `index`
+- `create`
+- `store`
+- `show`
+- `edit`
+- `update`
+- `destroy`
 
----
-
-### Jobs (Queue‑Aware)
+API resource controller:
 
 ```bash
-php artisan make:domain:job Orders ProcessOrderPayment --queue=heavy
+php artisan make:domain:controller Orders OrderController --api
 ```
 
-Jobs declare **intent**, not queue names.
+API resource methods generated:
 
-```php
-final class ProcessOrderPayment implements ShouldQueue, HeavyQueue
-{
-    use UsesDomainQueue;
-}
+- `index`
+- `store`
+- `show`
+- `update`
+- `destroy`
+
+`create` and `edit` are intentionally omitted for API controllers.
+
+Resource + actions shortcut:
+
+```bash
+php artisan make:domain:controller Orders OrderController --ra
 ```
 
-Automatically resolves to:
+API resource + actions shortcut:
 
+```bash
+php artisan make:domain:controller Orders OrderController --aa
 ```
-orders-heavy
-```
 
----
+Legacy equivalent flags still work:
 
-### Actions (Use‑Cases)
+- `--resource --action` for resource + actions
+- `--resource --api --action` for api resource + actions
+
+### Action
 
 ```bash
 php artisan make:domain:action Orders CreateOrder
 ```
 
-Actions are:
+Action naming is verb-first:
 
-* Synchronous
-* Reusable
-* Testable
+- `CreateUser`
+- `UpdateUser`
+- `DestroyUser`
 
-Controllers, listeners, and jobs **call actions**, not each other.
+When matching controller methods exist, action generation auto-wires the controller:
 
----
+- Adds action `use` import
+- Adds type-hint parameter into `store`, `update`, or `destroy`
 
-### Policies
-
-```bash
-php artisan make:domain:policy Orders OrderPolicy --model=Order
-```
-
-Policies are:
-
-* Domain‑scoped
-* Optionally auto‑registered
-
----
-
-### Domain Config
+### Model
 
 ```bash
-php artisan make:domain:config Orders orders
+php artisan make:domain:model Orders Order
 ```
 
-Creates:
+When generating actions, Domain Kit checks for a matching domain model:
 
-```txt
-config/domains/orders.php
+- If model exists, it is imported into the action class
+- If model does not exist, you are prompted to create it
+
+### Event
+
+```bash
+php artisan make:domain:event Orders OrderPlaced
 ```
 
-Used for:
+### Listener
 
-* Feature flags
-* Queue overrides
-* Integrations
-
----
-
-## Queue System (Intent‑Driven)
-
-### Marker Interfaces
-
-* `EmailQueue`
-* `SyncQueue`
-* `HeavyQueue`
-
-### Resolution Rule
-
-```
-<domain>-<intent>
+```bash
+php artisan make:domain:listener Orders SendOrderConfirmation
 ```
 
-Example:
+### Job
 
-```
-orders-emails
-users-sync
-billing-heavy
+```bash
+php artisan make:domain:job Orders ProcessOrderPayment
 ```
 
-No hard‑coded strings.
+## Action style config
 
----
-
-## Event Auto‑Registration
-
-Controlled via config:
+`config/domain-kit.php`:
 
 ```php
-return [
-    'events' => [
-        'auto_register' => true,
-    ],
-
-    'policies' => [
-        'auto_register' => true,
-    ],
-];
+'controller_actions' => [
+    'style' => 'flat', // or 'nested'
+],
 ```
 
-Turn it off if you prefer explicit wiring.
+`flat` style:
 
----
+- `App\\Domains\\Users\\Actions\\CreateUser`
+- `App\\Domains\\Users\\Actions\\UpdateUser`
+- `App\\Domains\\Users\\Actions\\DestroyUser`
 
-## AI / MCP / Laravel Boost Support
+`nested` style:
 
-Domain Kit generates **machine‑readable architecture metadata** under:
+- `App\\Domains\\Users\\Actions\\User\\Create`
+- `App\\Domains\\Users\\Actions\\User\\Update`
+- `App\\Domains\\Users\\Actions\\User\\Destroy`
 
-```txt
-.ai/domain-kit/
- ├── domains.json
- ├── events.json
- ├── queues.json
-```
+## Requirements
 
-This allows:
+- PHP `^8.2`
+- `illuminate/support` `^11 || ^12`
 
-* Laravel Boost to reason about flows
-* MCP agents to safely modify code
-* Zero hallucination about system structure
+## Status
 
-This package is **AI‑first by design**.
-
----
-
-## Versioning Strategy (Very Important)
-
-### Pre‑1.0
-
-* Rapid iteration
-* Minor breaking changes allowed
-
-### v1.0.0 (API Freeze)
-
-Once v1.0 is tagged:
-
-* Command signatures are frozen
-* Directory conventions are frozen
-* Public contracts are frozen
-* Config keys are frozen
-
-Breaking changes **require v2.0**.
-
-This ensures long‑term project safety.
-
----
-
-## Testing Strategy
-
-Domain Kit is tested as a **tooling framework**, not a runtime library.
-
-### Test Layers
-
-1. **Command execution tests**
-2. **Filesystem assertions**
-3. **Stub correctness**
-4. **Config toggles**
-5. **Idempotency checks**
-
-### Example (Pest)
-
-```php
-it('creates a domain event in the correct location', function () {
-    $this->artisan('make:domain:event Orders OrderPlaced')
-        ->assertExitCode(0);
-
-    expect(file_exists(
-        app_path('Domains/Orders/Events/OrderPlaced.php')
-    ))->toBeTrue();
-});
-```
-
-Tests live in:
-
-```txt
-tests/Feature/Commands/
-```
-
----
-
-## GitHub & Packagist Release Checklist
-
-### 1. Repository Setup
-
-```txt
-quiler/laravel-domain-kit
-```
-
-* MIT License
-* Clean README
-* `main` branch protected
-
----
-
-### 2. Composer Metadata
-
-* Proper package name
-* Laravel auto‑discovery
-* PHP ^8.2
-* Illuminate ^11 | ^12
-
----
-
-### 3. Tagging
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-Packagist auto‑indexes tags.
-
----
-
-### 4. CI (Recommended)
-
-* PHPStan (level 8)
-* Pest
-* PHP CS Fixer
-
----
-
-## What This Package Is NOT
-
-* Not a full DDD framework
-* Not an ORM replacement
-* Not a runtime abstraction layer
-
-It is **tooling that enforces discipline**.
-
----
-
-## Final Word
-
-Laravel Domain Kit exists because **architecture that lives only in documents always dies**.
-
-This package makes good architecture:
-
-* Easy to start
-* Hard to misuse
-* Obvious to read
-* Friendly to humans *and* AI
-
-If Laravel is your long‑term platform, this package pays for itself in months.
-
----
-
-**Welcome to domain‑first Laravel.**
+Current stable line is `1.0.x`.

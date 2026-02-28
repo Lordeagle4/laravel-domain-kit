@@ -11,7 +11,8 @@ use Awtechs\LaravelDomainKit\Commands\{
     MakeDomainControllerCommand,
     MakeDomainEventCommand,
     MakeDomainListenerCommand,
-    MakeDomainJobCommand
+    MakeDomainJobCommand,
+    MakeDomainModelCommand
 };
 
 final class DomainKitServiceProvider extends ServiceProvider
@@ -33,6 +34,7 @@ final class DomainKitServiceProvider extends ServiceProvider
             MakeDomainEventCommand::class,
             MakeDomainListenerCommand::class,
             MakeDomainJobCommand::class,
+            MakeDomainModelCommand::class,
             MakeDomainControllerCommand::class,
         ]);
 

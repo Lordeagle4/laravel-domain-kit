@@ -31,9 +31,12 @@ final class MakeDomainActionCommand extends Command
             return self::FAILURE;
         }
 
+        $model = $this->ensureModel($domain, $target['entity']);
+        $modelImport = $model === null ? '' : "use App\\Domains\\{$domain}\\Models\\{$model};";
+
         $stub = str_replace(
-            ['{{ namespace }}', '{{ class }}'],
-            [$target['namespace'], $target['class']],
+            ['{{ namespace }}', '{{ class }}', '{{ model_import }}'],
+            [$target['namespace'], $target['class'], $modelImport],
             $stubs->resolve('action')
         );
 
@@ -52,7 +55,15 @@ final class MakeDomainActionCommand extends Command
     }
 
     /**
-     * @return array{path:string,namespace:string,class:string,fqcn:string,controller:?string,verb:?string}
+     * @return array{
+     *   path:string,
+     *   namespace:string,
+     *   class:string,
+     *   fqcn:string,
+     *   controller:?string,
+     *   verb:?string,
+     *   entity:?string
+     * }
      */
     private function resolveTarget(
         string $domain,
@@ -75,17 +86,20 @@ final class MakeDomainActionCommand extends Command
         $subdirs = $segments;
         $verb = null;
         $controller = null;
+        $entity = null;
 
         if ($style === 'nested') {
             if ($subdirs === []) {
                 if (preg_match('/^(Create|Update|Destroy)(.+)$/', $class, $matches) === 1) {
                     $verb = Str::lower($matches[1]);
-                    $controller = Str::studly($matches[2]);
+                    $entity = Str::studly($matches[2]);
+                    $controller = $entity;
                     $subdirs = [$controller];
                     $class = Str::studly($matches[1]);
                 }
             } else {
-                $controller = Str::studly(end($subdirs));
+                $controller = Str::studly((string) end($subdirs));
+                $entity = $controller;
                 if (preg_match('/^(Create|Update|Destroy)$/', $class, $matches) === 1) {
                     $verb = Str::lower($matches[1]);
                 }
@@ -93,8 +107,9 @@ final class MakeDomainActionCommand extends Command
         } else {
             if (preg_match('/^(Create|Update|Destroy)(.+)$/', $class, $matches) === 1) {
                 $verb = Str::lower($matches[1]);
-                $controller = Str::studly($matches[2]);
-                $class = Str::studly($matches[1]) . Str::studly($matches[2]);
+                $entity = Str::studly($matches[2]);
+                $controller = $entity;
+                $class = Str::studly($matches[1]) . $entity;
             }
         }
 
@@ -108,7 +123,33 @@ final class MakeDomainActionCommand extends Command
             'fqcn' => "{$namespace}\\{$class}",
             'controller' => $controller,
             'verb' => $verb,
+            'entity' => $entity,
         ];
+    }
+
+    private function ensureModel(string $domain, ?string $entity): ?string
+    {
+        if ($entity === null || $entity === '') {
+            return null;
+        }
+
+        $model = Str::studly($entity);
+        $modelFile = app_path("Domains/{$domain}/Models/{$model}.php");
+
+        if (File::exists($modelFile)) {
+            return $model;
+        }
+
+        if ($this->confirm("Model [{$model}] not found. Create it?", false) !== true) {
+            return null;
+        }
+
+        $result = $this->call('make:domain:model', [
+            'domain' => $domain,
+            'name' => $model,
+        ]);
+
+        return $result === self::SUCCESS && File::exists($modelFile) ? $model : null;
     }
 
     private function wireControllerAction(
@@ -128,7 +169,7 @@ final class MakeDomainActionCommand extends Command
         }
 
         $method = match ($verb) {
-            'create' => 'create',
+            'create' => 'store',
             'update' => 'update',
             'destroy' => 'destroy',
             default => null,

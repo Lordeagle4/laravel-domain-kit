@@ -6,7 +6,7 @@ namespace Awtechs\LaravelDomainKit\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Awtech\LaravelDomainKit\Support\{DomainPathResolver, StubResolver};
+use Awtechs\LaravelDomainKit\Support\{DomainPathResolver, StubResolver};
 
 final class MakeDomainModelCommand extends Command
 {
