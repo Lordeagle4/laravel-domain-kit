@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use Awtechs\LaravelDomainKit\Commands\{
     MakeDomainActionCommand,
     MakeDomainCommand,
+    MakeDomainControllerCommand,
     MakeDomainEventCommand,
     MakeDomainListenerCommand,
     MakeDomainJobCommand
@@ -32,6 +33,7 @@ final class DomainKitServiceProvider extends ServiceProvider
             MakeDomainEventCommand::class,
             MakeDomainListenerCommand::class,
             MakeDomainJobCommand::class,
+            MakeDomainControllerCommand::class,
         ]);
 
         $this->publishes([

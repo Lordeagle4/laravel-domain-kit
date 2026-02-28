@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Illuminate\Http\Request;
+{{ response_import }}
+
+final class {{ class }}
+{
+    public function index(): {{ return_type }}
+    {
+        {{ index_body }}
+    }
+
+    public function show(int|string $id): {{ return_type }}
+    {
+        {{ show_body }}
+    }
+
+    public function create(Request $request): {{ return_type }}
+    {
+        {{ create_body }}
+    }
+
+    public function update(Request $request, int|string $id): {{ return_type }}
+    {
+        {{ update_body }}
+    }
+
+    public function destroy(int|string $id): {{ return_type }}
+    {
+        {{ destroy_body }}
+    }
+}
